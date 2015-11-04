@@ -12,7 +12,7 @@ public class TestMatrixCreation : MonoBehaviour {
 
 	bool[,] cards = new bool[boardWidth, boardHeight];
 
-	int nBoards = 10000;
+	int nBoards = 1000;
 	int counter;
 
 	public Text text_board;

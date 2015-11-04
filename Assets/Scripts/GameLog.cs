@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-public struct GameData{
+public struct BoardLogData{
 	public int boardSizeW;
 	public int boardSizeH;
 	public string boardID;
@@ -16,13 +15,13 @@ public class GameLog : MonoBehaviour {
 	#region VARIABLES
 	public static string path;
 
-	static GameData currentGame;
+	static BoardLogData currentGame;
 
 	#endregion
 
 	#region LOG_ACCESS
 	public static void StartGame(string bID, int sizeW, int sizeH){
-		currentGame = new GameData(){
+		currentGame = new BoardLogData(){
 			boardID = bID,
 			boardSizeH = sizeH,
 			boardSizeW = sizeW,
