@@ -9,24 +9,32 @@ public class MainMenu : MonoBehaviour {
 	#region BUTTONS_CALLBACKS
 	public void OnButtonPressed(int id){
 		switch(id){
-		case 0 : //RANDOM GAME
-			TurnSquaresGame.boardWidth = 4;
-			TurnSquaresGame.boardHeight = 4;
+		case 0 : //4x4
+            PopulateGUIScript.difficulty = 0;
+            Application.LoadLevel("01-MenuBoards");
 
-			Application.LoadLevel("01-TurnSquaresGame");
-			break;
-		case 1 : //SELECT LEVEL
-			TurnSquaresGame.boardWidth = 6;
-			TurnSquaresGame.boardHeight = 6;
-			
-			Application.LoadLevel("01-TurnSquaresGame");
-			break;
-		case 2 : //IDLE
-			TurnSquaresGame.boardWidth = 8;
-			TurnSquaresGame.boardHeight = 8;
-			
-			Application.LoadLevel("01-TurnSquaresGame");
+			//TurnSquaresGame.boardWidth = 4;
+			//TurnSquaresGame.boardHeight = 4;
 
+			//Application.LoadLevel("01-TurnSquaresGame");
+			break;
+		case 1 : //6x6
+            PopulateGUIScript.difficulty = 1;
+            Application.LoadLevel("01-MenuBoards");
+			
+            //TurnSquaresGame.boardWidth = 6;
+			//TurnSquaresGame.boardHeight = 6;
+			
+			//Application.LoadLevel("01-TurnSquaresGame");
+			break;
+		case 2 : //8x8
+            PopulateGUIScript.difficulty = 2;
+            Application.LoadLevel("01-MenuBoards");
+
+			//TurnSquaresGame.boardWidth = 8;
+			//TurnSquaresGame.boardHeight = 8;
+			
+			//Application.LoadLevel("01-TurnSquaresGame");
 			break;
 		case 3 : //STATISTIC
 			
@@ -37,20 +45,20 @@ public class MainMenu : MonoBehaviour {
 		default: break;
 		}
 	}
-	#endregion
+    #endregion
 
-	#region UNITY_CALLBACKS
-//	// Use this for initialization
-//	void Start () {
-//	
-//	}
-//	
-//	// Update is called once per frame
-//	void Update () {
-//	
-//	}
+    #region UNITY_CALLBACKS
+    // Use this for initialization
+    void Start() {
 
-	void OnGUI () {
+    }
+    //	
+    //	// Update is called once per frame
+    //	void Update () {
+    //	
+    //	}
+
+    void OnGUI () {
 		if(Input.GetKeyDown(KeyCode.Escape)){
 			Application.Quit();
 		}

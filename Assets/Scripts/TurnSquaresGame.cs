@@ -5,7 +5,11 @@ using System.Collections;
 public class TurnSquaresGame : MonoBehaviour {
 	#region VARIABLES
 	public static bool isRandom = true;
-	public static string boardID = "";
+
+    public static int boardLevel;
+    public static int boardID;
+
+    public static string boardMatrix = "";
 
 	public string currentBoard = "";
 
@@ -25,11 +29,20 @@ public class TurnSquaresGame : MonoBehaviour {
 	int scoreCount = 0;
 
 	bool isBusy = false;
+    bool retry = false;
 
-	#endregion
-	
-	#region SETUP
-	void CreateCardMatrix()
+    public GameObject panelScore;
+    public GameObject panelCurrentScore;
+    
+    public Text textCurrentScore;
+    public Text textBoardID;
+    public Text textFinalScore;
+    public Text textTimerCountdown;
+
+    #endregion
+
+    #region SETUP
+    void CreateCardMatrix()
 	{
 		GameObject parent = new GameObject();
 		parent.name = "Cards";
@@ -75,7 +88,8 @@ public class TurnSquaresGame : MonoBehaviour {
 		currentBoardMinHeight = 0;
 
 		scoreCount = 0;
-		UpdateGUI_MovesCount();
+        panelCurrentScore.SetActive(true);
+        UpdateGUI_MovesCount();
 
 		string str = "";
 
@@ -98,16 +112,28 @@ public class TurnSquaresGame : MonoBehaviour {
 			GenerateRandomMatrix();
 		}
 		else{
-			boardID = str;
+			boardMatrix = str;
 			UpdateGUI_BoardID();
 
 			StartCoroutine(ResizeBorders(.5f));
 		}
 
 		GameLog.StartGame(str,boardWidth, boardHeight);
-	}
 
-	bool CheckIfIsValid(){
+        panelScore.SetActive(false);
+    }
+
+    void GenerateNextMatrix() {
+        if(boardID < GameData.boards[boardLevel].Count -1 ) {
+            boardID++;
+            
+            boardMatrix = GameData.boards[boardLevel][boardID].matrix;
+
+            LoadBoardFromID(boardMatrix);
+        }
+    }
+
+    bool CheckIfIsValid(){
 		int ac = 0;
 		
 		ac = 0;
@@ -160,8 +186,8 @@ public class TurnSquaresGame : MonoBehaviour {
 		currentBoardMinHeight = 0;
 		
 		scoreCount = 0;
-
-		UpdateGUI_MovesCount();
+        panelCurrentScore.SetActive(true);
+        UpdateGUI_MovesCount();
 
 		int x = 0 ; 
 		int y = 0;
@@ -184,8 +210,10 @@ public class TurnSquaresGame : MonoBehaviour {
 		UpdateGUI_BoardID();
 
 		GameLog.StartGame(id,boardWidth, boardHeight);
-		
-		StartCoroutine(ResizeBorders(.5f));
+
+        panelScore.SetActive(false);
+
+        StartCoroutine(ResizeBorders(.5f));
 	}
 	#endregion
 
@@ -367,10 +395,47 @@ public class TurnSquaresGame : MonoBehaviour {
 	EndGame:
 		EndGame();
 		GameLog.EndGame();
-		yield return new WaitForSeconds(2);
-		if(isRandom){
-			GenerateRandomMatrix();
-		}
+        
+        textTimerCountdown.text = "Next\nIn 5";
+        if (retry)
+            goto EndFunc;
+        yield return new WaitForSeconds(1);
+        if (retry)
+            goto EndFunc;
+        textTimerCountdown.text = "Next\nIn 4";
+        yield return new WaitForSeconds(1);
+        if (retry)
+            goto EndFunc;
+        textTimerCountdown.text = "Next\nIn 3";
+        yield return new WaitForSeconds(1);
+        if (retry)
+            goto EndFunc;
+        textTimerCountdown.text = "Next\nIn 2";
+        yield return new WaitForSeconds(1);
+        if (retry)
+            goto EndFunc;
+        textTimerCountdown.text = "Next\nIn 1";
+        yield return new WaitForSeconds(1);
+        if (retry)
+            goto EndFunc;
+        textTimerCountdown.text = "Next\nIn 0";
+        yield return new WaitForSeconds(.2f);
+
+
+        if (retry) {
+            goto EndFunc;
+        }
+        else {
+            if (isRandom) {
+                GenerateRandomMatrix();
+            }
+            else {
+                GenerateNextMatrix();
+            }
+        }
+
+    EndFunc:
+        retry = false;
 		yield break;
 	}
 
@@ -380,34 +445,52 @@ public class TurnSquaresGame : MonoBehaviour {
 	}
 
 	void EndGame(){
-		Debug.Log(currentBoardMinHeight + " >= " + currentBoardMaxHeight + " || " + currentBoardMinWidth + " >= " + currentBoardMaxWidth);
-		GameObject.Find("Text_Moves").GetComponent<Text>().text = "Level finished\nin " + scoreCount + " Moves.";
+		//Debug.Log(currentBoardMinHeight + " >= " + currentBoardMaxHeight + " || " + currentBoardMinWidth + " >= " + currentBoardMaxWidth);
+        panelScore.SetActive(true);
+        panelCurrentScore.SetActive(false);
+
+        if (GameData.boards[boardLevel][boardID].played) {
+            if (GameData.boards[boardLevel][boardID].userMoves > scoreCount)
+                GameData.boards[boardLevel][boardID].userMoves = scoreCount;
+        }
+        else {
+            GameData.boards[boardLevel][boardID].played = true;
+            GameData.boards[boardLevel][boardID].userMoves = scoreCount;
+        }
+        GameData.SaveBoards();
+
+        textFinalScore.text = "Level finished\nin " + scoreCount + " Moves.";
 	}
 	#endregion
 
 	#region GUI_UPDATE
 	void UpdateGUI_MovesCount(){
-		GameObject.Find("Text_Moves").GetComponent<Text>().text = "" + scoreCount;
+        textCurrentScore.text = "" + scoreCount;
 	}
 
 	void UpdateGUI_BoardID(){
-		GameObject.Find("Text_BoardID").GetComponent<Text>().text = boardID;
+		textBoardID.text = boardMatrix;
 	}
 	#endregion
 
 	#region BUTTONS_CALLBACKS
 	public void OnButtonPressed(int id){
 		switch(id){
-		case 0 : //SETTINGS
+		    case 0 : //SETTINGS
 
-			break;
-		case 1 : //RESET
-			this.LoadBoardFromID(boardID);
-			break;
-		case 2 : //NEW BOARD
-			this.GenerateRandomMatrix();
-			break;
-		default: break;
+			    break;
+		    case 1 : //RESET
+			    this.LoadBoardFromID(boardMatrix);
+			    break;
+		    case 2 : //NEW BOARD
+                retry = true;
+			    this.GenerateNextMatrix();
+			    break;
+            case 3: //RETRY SAME BOARD
+                retry = true;
+                this.LoadBoardFromID(boardMatrix);
+                break;
+		    default: break;
 		}
 	}
 	#endregion
@@ -421,8 +504,11 @@ public class TurnSquaresGame : MonoBehaviour {
 
 		if(isRandom){
 			GenerateRandomMatrix();
-//			LoadBoardFromID("000000111111000000111111000000111111");
-		}
+            //			LoadBoardFromID("000000111111000000111111000000111111");
+        }
+        else {
+            LoadBoardFromID(boardMatrix);
+        }
 	}
 	
 	// Update is called once per frame
@@ -446,7 +532,7 @@ public class TurnSquaresGame : MonoBehaviour {
 
 	void OnGUI(){
 		if(Input.GetKeyDown(KeyCode.Escape)){
-			Application.LoadLevel("00-Menu");
+			Application.LoadLevel("01-MenuBoards");
 		}
 	}
 	#endregion

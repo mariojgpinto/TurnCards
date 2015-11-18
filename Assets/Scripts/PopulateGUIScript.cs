@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class PopulateGUIScript : MonoBehaviour {
@@ -7,14 +8,14 @@ public class PopulateGUIScript : MonoBehaviour {
 
     public GameObject content;
 
-    public int difficulty = 0;
+    public static int difficulty = 0;
 
 
     int nElementsPerPage = 30;
     int nColumns = 5;
     //int nRows;
     int spacing = 5;
-    int paddingH = 10;
+    int paddingH = 15;
     int paddingV = 15;
 
     // Use this for initialization
@@ -22,6 +23,8 @@ public class PopulateGUIScript : MonoBehaviour {
     {
         GameObject page = Instantiate(panelUIPrefab) as GameObject;
         page.transform.SetParent(content.transform);
+
+        page.GetComponentInChildren<Text>().text = "Level " + (difficulty == 0 ? "4x4" : (difficulty == 1 ? "6x6" : "8x8"));
 
         GameObject contentGameObject = page.transform.FindChild("Panel").gameObject;
         UnityEngine.UI.GridLayoutGroup grid = contentGameObject.GetComponentInChildren<UnityEngine.UI.GridLayoutGroup>();
@@ -54,7 +57,7 @@ public class PopulateGUIScript : MonoBehaviour {
     
     public void GeneratePages (List<Board> boards) {
         //int nPages = boards.Count / nElementsPerPage;
-        int nPages = 200 / nElementsPerPage;
+        int nPages = 150 / nElementsPerPage;
 
         Debug.Log("nPages: " + nPages);
 
@@ -70,5 +73,11 @@ public class PopulateGUIScript : MonoBehaviour {
         //nRows = nElementsPerPage / nColumns;
         GeneratePages(GameData.boards[difficulty]);
 
+    }
+
+    void OnGUI () {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Application.LoadLevel(0);
+        }
     }
 }

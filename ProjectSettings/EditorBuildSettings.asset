@@ -8,6 +8,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/00-Menu.unity
   - enabled: 1
+    path: Assets/Scenes/01-MenuBoards.unity
+  - enabled: 1
     path: Assets/Scenes/01-TurnSquaresGame.unity
   - enabled: 1
     path: Assets/Scenes/02-TurnSquaresIdle.unity
