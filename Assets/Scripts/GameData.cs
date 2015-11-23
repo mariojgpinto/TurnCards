@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class Board {
     public int id;
@@ -11,6 +12,7 @@ public class Board {
     public int minMoves = 0;
     public int userMoves = 0;
 
+    public bool sync = true;
 }
 
 public class GameData {
@@ -68,7 +70,7 @@ public class GameData {
             if (txtBoardInfo != null && txtBoardInfo != "") {
                 string[] info = txtBoardInfo.Split(new string[] { splitMarker }, System.StringSplitOptions.RemoveEmptyEntries);
 
-                if (info != null && info.Length == 6) {
+                if (info != null && info.Length >= 6) {
                     Board board = new Board();
 
                     board.boardSizeW = System.Convert.ToInt32(info[0]);
@@ -77,6 +79,14 @@ public class GameData {
                     board.userMoves = System.Convert.ToInt32(info[3]);
                     board.minMoves = System.Convert.ToInt32(info[4]);
                     board.matrix = info[5];
+                    if(info.Length == 7)
+                        board.sync = info[6] == "1";
+                    else {
+                        if (board.played)
+                            board.sync = false;
+                        else
+                            board.sync = true;
+                    }
 
                     bool added = false;
                     if (board.boardSizeW == 4 && boards[0].Count < 150) {
@@ -95,8 +105,15 @@ public class GameData {
                         added = true;
                     }
 
-                    if(added)
+                    if (added) {
                         allBoards.Add(board);
+
+                        if(board.played && board.sync == false)
+                            GameDataWWW.UpdateBoardInfo(
+                                    board.matrix,
+                                    board.userMoves,
+                                    -2);
+                    }
                 }
             }           
         }        
@@ -147,21 +164,22 @@ public class GameData {
                 board.userMoves + splitMarker +
                 board.minMoves + splitMarker +
                 board.matrix + splitMarker +
+                (board.sync? "1" : "0") + splitMarker +
                 "\n";
         }
 
         System.IO.File.WriteAllText(boardsFile, str);
     }
 
-    static void SaveBoard(int level, int boardID) {
+    public static void SaveBoard(int level, int boardID) {
         //switch (level) {
 
         //}
-        SaveBoards();
+        //SaveBoards();
     }
     #endregion
 
-    #region UNITY_CALLBACKS
+    #region FUNCTIONS
     static public void Initialize ()
     {
         for (int i = 0; i < boardsFiles.Length; ++i) {
@@ -175,6 +193,15 @@ public class GameData {
         GameData.LoadData();
 
         Debug.Log("TotalBoads: " + allBoards.Count);
+    }
+
+    public static int GetBoardIndex(string boardMatrix) {
+        for(int i = 0; i < allBoards.Count; ++i) {
+            if(allBoards[i].matrix == boardMatrix) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     //// Use this for initialization

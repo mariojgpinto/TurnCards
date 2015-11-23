@@ -31,6 +31,8 @@ public class TurnSquaresGame : MonoBehaviour {
 	bool isBusy = false;
     bool retry = false;
 
+    float timeInit = 0;
+
     public GameObject panelScore;
     public GameObject panelCurrentScore;
     
@@ -395,7 +397,15 @@ public class TurnSquaresGame : MonoBehaviour {
 	EndGame:
 		EndGame();
 		GameLog.EndGame();
-        
+        GameDataWWW.UpdateBoardInfo(
+            boardMatrix,
+            scoreCount,
+            GameLog.GetTime()
+        );
+
+        GameData.SaveBoard(boardLevel, boardID);
+
+
         textTimerCountdown.text = "Next\nIn 5";
         if (retry)
             goto EndFunc;
@@ -457,8 +467,7 @@ public class TurnSquaresGame : MonoBehaviour {
             GameData.boards[boardLevel][boardID].played = true;
             GameData.boards[boardLevel][boardID].userMoves = scoreCount;
         }
-        GameData.SaveBoards();
-
+        
         textFinalScore.text = "Level finished\nin " + scoreCount + " Moves.";
 	}
 	#endregion

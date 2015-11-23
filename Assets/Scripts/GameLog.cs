@@ -5,7 +5,7 @@ using System.IO;
 public struct BoardLogData{
 	public int boardSizeW;
 	public int boardSizeH;
-	public string boardID;
+	public string boardMatrix;
 	public List<KeyValuePair<int,int>> moves;
 	public float startTime;
 	public float endTime;
@@ -22,7 +22,7 @@ public class GameLog : MonoBehaviour {
 	#region LOG_ACCESS
 	public static void StartGame(string bID, int sizeW, int sizeH){
 		currentGame = new BoardLogData(){
-			boardID = bID,
+			boardMatrix = bID,
 			boardSizeH = sizeH,
 			boardSizeW = sizeW,
 			moves = new List<KeyValuePair<int,int>>(),
@@ -38,15 +38,19 @@ public class GameLog : MonoBehaviour {
 		currentGame.endTime = Time.realtimeSinceStartup;
 		AddData();
 	}
+
+    public static int GetTime() {
+        return Mathf.CeilToInt(currentGame.endTime - currentGame.startTime);
+    }
 	#endregion
 
 	#region DATA_PERSISTENCE
 	static void AddData(){
-		string str = "";
+        string str = "";
 
 		str += 	currentGame.boardSizeW + "|" + 
 				currentGame.boardSizeH + "|" + 
-				currentGame.boardID + "|" + 
+				currentGame.boardMatrix + "|" + 
 				(currentGame.endTime - currentGame.startTime) + "|" + 
 				currentGame.moves.Count + "|";
 
