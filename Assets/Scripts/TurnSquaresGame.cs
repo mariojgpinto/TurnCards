@@ -499,12 +499,21 @@ public class TurnSquaresGame : MonoBehaviour {
                 retry = true;
                 this.LoadBoardFromID(boardMatrix);
                 break;
-		    default: break;
+            case 99: //SPACECAN
+#if UNITY_ANDROID && !UNITY_EDITOR
+                Application.OpenURL("https://play.google.com/store/apps/details?id=com.BINTERACTIVE.SpaceCan");
+#elif UNITY_IPHONE && !UNITY_EDITOR
+                Application.OpenURL("https://itunes.apple.com/pt/app/id1040093401");
+#else
+                Application.OpenURL("https://facebook.com/spacecangame");
+#endif
+                break;
+            default: break;
 		}
 	}
-	#endregion
+#endregion
 
-	#region UNITY_CALLBACKS
+#region UNITY_CALLBACKS
 	// Use this for initialization
 	void Start () {
 		CreateCardMatrix();
@@ -522,21 +531,21 @@ public class TurnSquaresGame : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		#if UNITY_EDITOR
+#if UNITY_EDITOR
 		if (Input.GetMouseButtonDown(0))
 		{
 			if(!isBusy)
 				ProcessTouch(Input.mousePosition.x, Input.mousePosition.y);
 			
 		}
-		#else
+#else
 		//if (Input.touchCount > 0/* && Input.touches[0].phase == TouchPhase.Began*/)
 		if (Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
 		{
 			if(!isBusy)
 				ProcessTouch(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y);
 		}
-		#endif
+#endif
 	}
 
 	void OnGUI(){
@@ -544,5 +553,5 @@ public class TurnSquaresGame : MonoBehaviour {
 			Application.LoadLevel("01-MenuBoards");
 		}
 	}
-	#endregion
+#endregion
 }
