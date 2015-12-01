@@ -6,16 +6,17 @@ public class GameDataWWW : MonoBehaviour {
     static GameDataWWW instance;
 
     public const string _id = "MACRO_ID";
-    public const string _moves = "MACRO_MOVES";
+    public const string _n_moves = "MACRO_N_MOVES";
     public const string _time = "MACRO_TIME";
+    public const string _moves = "MACRO_MOVES";
 
-    static string wwwGetBoardInfo = "www.binteractive.pt/ricardo/jogomario/getjogo.php?id=MACRO_ID";
-    static string wwwGetAllBoardsInfo = "www.binteractive.pt/ricardo/jogomario/getjogo.php";
-    static string wwwSendBoardInfo = "www.binteractive.pt/ricardo/jogomario/insert-jogada.php?jogo=MACRO_ID&movimentos=MACRO_MOVES&tempo=MACRO_TIME";
+    static string wwwGetBoardInfo = "http://www.binteractive.pt/ricardo/jogomario/getjogo.php?id=MACRO_ID";
+    static string wwwGetAllBoardsInfo = "http://www.binteractive.pt/ricardo/jogomario/getjogo.php";
+    static string wwwSendBoardInfo = "http://www.binteractive.pt/ricardo/jogomario/insert-jogada.php?jogo=MACRO_ID&movimentos=MACRO_N_MOVES&tempo=MACRO_TIME&jogadas=MACRO_MOVES";
     #endregion
 
-    public static void UpdateBoardInfo(string matrix, int moves, int time) {
-        instance.StartCoroutine(UpdateBoardInfo_routine(matrix, moves, time));
+    public static void UpdateBoardInfo(string matrix, int n_moves, int time, string moves = "") {
+        instance.StartCoroutine(UpdateBoardInfo_routine(matrix, n_moves, time, moves));
     }
 
     public static void GetAllInfo() {
@@ -29,19 +30,24 @@ public class GameDataWWW : MonoBehaviour {
 
 
 
-    static IEnumerator UpdateBoardInfo_routine(string matrix, int moves, int time) {
-        WWW www = new WWW(GameDataWWW.wwwSendBoardInfo.Replace(_id, matrix).Replace(_moves, ""+moves).Replace(_time, "" + time));
+    static IEnumerator UpdateBoardInfo_routine(string matrix, int n_moves, int time, string moves) {
+        WWW www = new WWW(GameDataWWW.wwwSendBoardInfo.
+            Replace(_id, matrix).
+            Replace(_n_moves, ""+n_moves).
+            Replace(_time, "" + time).
+            Replace(_moves, moves));
+
         yield return www;
 
         int id = GameData.GetBoardIndex(matrix);
         if (id >= 0) {
             if (www != null) {
                 if (www.text != "") {
-                    Debug.Log("Informations Sent: " + www.text);
+                    Debug.Log("Informations Sent: " + www.text + " - " + www.url);
                     GameData.allBoards[id].sync = true;
 
-                    if (GameData.allBoards[id].minMoves == 0 || GameData.allBoards[id].minMoves >= moves)
-                        GameData.allBoards[id].minMoves = moves;
+                    if (GameData.allBoards[id].minMoves == 0 || GameData.allBoards[id].minMoves >= n_moves)
+                        GameData.allBoards[id].minMoves = n_moves;
                 }
                 else {
                     Debug.Log("UpdateBoardInfo Error: " + www.error);
@@ -95,8 +101,13 @@ public class GameDataWWW : MonoBehaviour {
         WWW www = new WWW(GameDataWWW.wwwGetAllBoardsInfo);
         yield return www;
 
-        if (www.text != "") {
-            try {
+        //GameObject.Find("Text_Log").GetComponent<UnityEngine.UI.Text>().text += "TEST3-" + (www==null) + "\n";
+        //GameObject.Find("Text_Log").GetComponent<UnityEngine.UI.Text>().text += "TEST4-" + www.error + "\n";
+        //GameObject.Find("Text_Log").GetComponent<UnityEngine.UI.Text>().text += "TEST5-" + www.url+ "\n";
+        //GameObject.Find("Text_Log").GetComponent<UnityEngine.UI.Text>().text += "TEST5-" + www.text + "\n";
+        try {
+            if (www.text != "") {
+            
                 JSONObject js = new JSONObject(www.text);
 
                 for (int i = 0; i < js.Count; ++i) {
@@ -124,10 +135,10 @@ public class GameDataWWW : MonoBehaviour {
                 }
 
                 Debug.Log(www.text);
-            }
-            catch (System.Exception e) {
-                Debug.Log("Exception: " + e.ToString());
-            }
+            }           
+        }
+        catch (System.Exception e) {
+            Debug.Log("Exception: " + e.ToString());
         }
     }
 

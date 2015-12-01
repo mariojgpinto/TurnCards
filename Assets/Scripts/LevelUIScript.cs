@@ -7,8 +7,8 @@ public class LevelUIScript : MonoBehaviour {
     public UnityEngine.UI.Text text_ID;
     public GameObject image_User;
     public UnityEngine.UI.Text text_User;
-    public GameObject image_Min;
-    public UnityEngine.UI.Text text_Min;
+    //public GameObject image_Min;
+    //public UnityEngine.UI.Text text_Min;
 
 
     public void SetLevel(int difficulty, int number)
@@ -22,18 +22,25 @@ public class LevelUIScript : MonoBehaviour {
         if (board.played) {
             image_User.SetActive(true);
             text_User.text = "" + board.userMoves;
+
+            if(board.userMoves > board.minMoves) {
+                image_User.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 0);
+            }
+            else {
+                image_User.GetComponent<UnityEngine.UI.Image>().color = new Color(0, 1, 0);
+            }
         }
         else {
             image_User.SetActive(false);
         }
 
-        if (board.minMoves > 0) {
-            image_Min.SetActive(true);
-            text_Min.text = "" + board.minMoves;
-        }
-        else {
-            image_Min.SetActive(false);
-        }
+        //if (board.minMoves > 0) {
+        //    image_Min.SetActive(true);
+        //    text_Min.text = "" + board.minMoves;
+        //}
+        //else {
+        //    image_Min.SetActive(false);
+        //}
     }
 
     public void OnButtonPressed()

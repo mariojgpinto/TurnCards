@@ -42,10 +42,20 @@ public class GameLog : MonoBehaviour {
     public static int GetTime() {
         return Mathf.CeilToInt(currentGame.endTime - currentGame.startTime);
     }
-	#endregion
 
-	#region DATA_PERSISTENCE
-	static void AddData(){
+    public static string GetMoves() {
+        string str = "";
+
+        for (int i = 0; i < currentGame.moves.Count; ++i) {
+            str += "(" + currentGame.moves[i].Key + ";" + currentGame.moves[i].Value + ")";
+        }
+
+        return str;
+    }
+    #endregion
+
+    #region DATA_PERSISTENCE
+    static void AddData(){
         string str = "";
 
 		str += 	currentGame.boardSizeW + "|" + 

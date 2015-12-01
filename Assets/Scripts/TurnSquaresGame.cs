@@ -37,9 +37,11 @@ public class TurnSquaresGame : MonoBehaviour {
     public GameObject panelCurrentScore;
     
     public Text textCurrentScore;
+    public Text textMinScore;
     public Text textBoardID;
     public Text textFinalScore;
     public Text textTimerCountdown;
+
 
     #endregion
 
@@ -234,7 +236,7 @@ public class TurnSquaresGame : MonoBehaviour {
 
 			if(x < currentBoardMaxWidth && x >= currentBoardMinWidth && 
 			   y < currentBoardMaxHeight && y >= currentBoardMinHeight){
-
+                Debug.Log("Flip(" + x + "," + y + ")");
 				isBusy = true;
 
 				card.FlipCard();
@@ -400,7 +402,8 @@ public class TurnSquaresGame : MonoBehaviour {
         GameDataWWW.UpdateBoardInfo(
             boardMatrix,
             scoreCount,
-            GameLog.GetTime()
+            GameLog.GetTime(),
+            GameLog.GetMoves()
         );
 
         GameData.SaveBoard(boardLevel, boardID);
@@ -479,7 +482,15 @@ public class TurnSquaresGame : MonoBehaviour {
 
 	void UpdateGUI_BoardID(){
 		textBoardID.text = boardMatrix;
-	}
+
+        if(GameData.boards[boardLevel][boardID].minMoves == 0) {
+            textMinScore.text = "666";
+        }
+        else {
+            textMinScore.text = "" + GameData.boards[boardLevel][boardID].minMoves;
+        }
+        
+    }
 	#endregion
 
 	#region BUTTONS_CALLBACKS
