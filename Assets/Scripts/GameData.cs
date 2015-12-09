@@ -11,8 +11,6 @@ public class Board {
     public bool played = false;
     public int minMoves = 0;
     public int userMoves = 0;
-
-    public bool sync = true;
 }
 
 public class GameData {
@@ -79,14 +77,6 @@ public class GameData {
                     board.userMoves = System.Convert.ToInt32(info[3]);
                     board.minMoves = System.Convert.ToInt32(info[4]);
                     board.matrix = info[5];
-                    if(info.Length == 7)
-                        board.sync = info[6] == "1";
-                    else {
-                        if (board.played)
-                            board.sync = false;
-                        else
-                            board.sync = true;
-                    }
 
                     bool added = false;
                     if (board.boardSizeW == 4 && boards[0].Count < 150) {
@@ -107,12 +97,6 @@ public class GameData {
 
                     if (added) {
                         allBoards.Add(board);
-
-                        if(board.played && board.sync == false)
-                            GameDataWWW.UpdateBoardInfo(
-                                    board.matrix,
-                                    board.userMoves,
-                                    -2);
                     }
                 }
             }           
@@ -164,7 +148,6 @@ public class GameData {
                 board.userMoves + splitMarker +
                 board.minMoves + splitMarker +
                 board.matrix + splitMarker +
-                (board.sync? "1" : "0") + splitMarker +
                 "\n";
         }
 

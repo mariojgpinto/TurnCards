@@ -3,12 +3,14 @@ using System.Collections;
 
 public class SolverBoard{
 	public bool[] matrix;
+	public string matrix_str;
 	public int width, height;
 	public int minX, maxX, minY, maxY;
 	
 	public bool solved = false;
 	
 	public SolverBoard(string _matrix){
+		matrix_str = _matrix;
 		matrix = new bool[_matrix.Length];
 		for(int i = 0 ; i < _matrix.Length ; matrix[i]=_matrix[i++] == '1');
 		

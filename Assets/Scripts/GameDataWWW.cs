@@ -13,22 +13,75 @@ public class GameDataWWW : MonoBehaviour {
     static string wwwGetBoardInfo = "http://www.binteractive.pt/ricardo/jogomario/getjogo.php?id=MACRO_ID";
     static string wwwGetAllBoardsInfo = "http://www.binteractive.pt/ricardo/jogomario/getjogo.php";
     static string wwwSendBoardInfo = "http://www.binteractive.pt/ricardo/jogomario/insert-jogada.php?jogo=MACRO_ID&movimentos=MACRO_N_MOVES&tempo=MACRO_TIME&jogadas=MACRO_MOVES";
+
+	static string localTempFile = "tempInfo.dat";
     #endregion
 
     public static void UpdateBoardInfo(string matrix, int n_moves, int time, string moves = "") {
-        instance.StartCoroutine(UpdateBoardInfo_routine(matrix, n_moves, time, moves));
+		if(Application.internetReachability == NetworkReachability.NotReachable){
+			SaveInFile(matrix, n_moves, time, moves);
+			GameData.SaveBoards();
+		}
+		else{
+        	instance.StartCoroutine(UpdateBoardInfo_routine(matrix, n_moves, time, moves));
+			StartCheck();
+		}
     }
 
     public static void GetAllInfo() {
-        instance.StartCoroutine(GetAllInfo_routine());
+		if(Application.internetReachability != NetworkReachability.NotReachable){
+        	instance.StartCoroutine(GetAllInfo_routine());
+		}
     }
 
     public static void GetBoardInfo(string matrix) {
-        instance.StartCoroutine(GetBoardInfo_routine(matrix));
+		if(Application.internetReachability != NetworkReachability.NotReachable){
+        	instance.StartCoroutine(GetBoardInfo_routine(matrix));
+		}
     }
 
+	public static void StartCheck(){
+		if(System.IO.File.Exists(localTempFile)){
+			if(Application.internetReachability != NetworkReachability.NotReachable){
+				string[] allText = System.IO.File.ReadAllLines(localTempFile);
+				System.IO.File.Delete(localTempFile);
+
+				if(allText != null && allText.Length > 0){
+					foreach(string url in allText){
+						instance.StartCoroutine(SendBoardInfo_routine(url));
+					}
+				}
+			}
+		}
+	}
 
 
+	static void SaveInFile(string matrix, int n_moves, int time, string moves){
+		int id = GameData.GetBoardIndex(matrix);
+		if (GameData.allBoards[id].minMoves == 0 || GameData.allBoards[id].minMoves >= n_moves)
+			GameData.allBoards[id].minMoves = n_moves;
+				
+		System.IO.File.AppendAllText(
+			localTempFile,
+			GameDataWWW.wwwSendBoardInfo.
+			Replace(_id, matrix).
+			Replace(_n_moves, ""+n_moves).
+			Replace(_time, "" + time).
+			Replace(_moves, moves)
+		);
+	}
+
+	static IEnumerator SendBoardInfo_routine(string url) {
+		WWW www = new WWW(url);
+		yield return www;
+
+		if (www == null || www.error != null) {
+			System.IO.File.AppendAllText(
+				localTempFile,
+				url
+			);
+		}
+	}
 
     static IEnumerator UpdateBoardInfo_routine(string matrix, int n_moves, int time, string moves) {
         WWW www = new WWW(GameDataWWW.wwwSendBoardInfo.
@@ -42,21 +95,20 @@ public class GameDataWWW : MonoBehaviour {
         int id = GameData.GetBoardIndex(matrix);
         if (id >= 0) {
             if (www != null) {
-                if (www.text != "") {
+                if (www.error != "") {
                     Debug.Log("Informations Sent: " + www.text + " - " + www.url);
-                    GameData.allBoards[id].sync = true;
 
                     if (GameData.allBoards[id].minMoves == 0 || GameData.allBoards[id].minMoves >= n_moves)
                         GameData.allBoards[id].minMoves = n_moves;
                 }
                 else {
                     Debug.Log("UpdateBoardInfo Error: " + www.error);
-                    GameData.allBoards[id].sync = false;
+					SaveInFile(matrix, n_moves, time, moves);
                 }
             }
             else {
                 Debug.Log("UpdateBoardInfo Error: NULL");
-                GameData.allBoards[id].sync = false;
+				SaveInFile(matrix, n_moves, time, moves);
             }
         }
 
@@ -107,7 +159,6 @@ public class GameDataWWW : MonoBehaviour {
         //GameObject.Find("Text_Log").GetComponent<UnityEngine.UI.Text>().text += "TEST5-" + www.text + "\n";
         try {
             if (www.text != "") {
-            
                 JSONObject js = new JSONObject(www.text);
 
                 for (int i = 0; i < js.Count; ++i) {
@@ -160,7 +211,9 @@ public class GameDataWWW : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        StartCoroutine(GetAllInfo_routine());
+		localTempFile = Application.persistentDataPath + "/tempInfo.dat";
+		StartCheck();
+		GetAllInfo();
 	}
 	
 	// Update is called once per frame
