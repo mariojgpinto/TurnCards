@@ -11,6 +11,8 @@ public class TurnCard : MonoBehaviour {
 	public int posX;
 	public int posY;
 	Vector3 initialScale = Vector3.one * .2f;
+
+	public bool stop = false;
 	#endregion
 
 	#region SETUP
@@ -21,6 +23,8 @@ public class TurnCard : MonoBehaviour {
 	}
 
 	public void ResetCard(){
+		if(isBusy)
+			stop = true;
 		this.transform.localScale = initialScale;
 		isActive = true; 
 		isBusy = false;
@@ -59,6 +63,8 @@ public class TurnCard : MonoBehaviour {
 		float duration = .5f;
 		Vector3 initialRotation = this.transform.rotation.eulerAngles;
 
+		isBusy = true;
+
 		yield return new WaitForSeconds(waitTime);
 
 		while(progress < 1)
@@ -69,7 +75,12 @@ public class TurnCard : MonoBehaviour {
 				this.transform.localScale = (initialScale) + (initialScale * .5f) * progress;
 			else
 				this.transform.localScale = (initialScale) + (initialScale * .5f) * (1 - progress);
-			
+
+			if(stop){
+				stop = false;
+				goto end;
+			}
+
 			progress += Time.deltaTime/duration;
 			yield return true;//new WaitForSeconds(smoothness);
 		}
@@ -78,7 +89,11 @@ public class TurnCard : MonoBehaviour {
 		this.transform.localScale = initialScale;
 		
 		isBusy = false;
-		
+
+		yield break; 
+
+		end:
+		this.transform.localScale = initialScale;
 		yield break;
 	}
 
@@ -92,7 +107,12 @@ public class TurnCard : MonoBehaviour {
 		while(progress < 1)
 		{
 			this.transform.localScale = initialScale * (1-progress);
-			
+
+			if(stop){
+				stop = false;
+				goto end;
+			}
+
 			progress += Time.deltaTime/duration;
 			yield return true;//new WaitForSeconds(smoothness);
 		}
@@ -102,7 +122,11 @@ public class TurnCard : MonoBehaviour {
 		isBusy = false;
 
 		SetBlack();
-		
+
+		yield break; 
+
+		end:
+		this.transform.localScale = initialScale;
 		yield break;
 	}
 	#endregion

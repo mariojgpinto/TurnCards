@@ -201,7 +201,7 @@ namespace UnityEngine.UI.Extensions
         private void DistributePages()
         {
             int _offset = 0;
-            int _step = (int)(Screen.width * .825f);
+            int _step = (int)(Screen.width * .8f);
             int _dimension = 0;
 
             int currentXPosition = 0;

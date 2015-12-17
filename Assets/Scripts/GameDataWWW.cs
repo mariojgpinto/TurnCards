@@ -67,7 +67,7 @@ public class GameDataWWW : MonoBehaviour {
 			Replace(_id, matrix).
 			Replace(_n_moves, ""+n_moves).
 			Replace(_time, "" + time).
-			Replace(_moves, moves)
+			Replace(_moves, moves) + "\n"
 		);
 	}
 
@@ -174,13 +174,13 @@ public class GameDataWWW : MonoBehaviour {
                             if (min < GameData.allBoards[tempIdx].minMoves || GameData.allBoards[tempIdx].minMoves == 0) {
                                 GameData.allBoards[tempIdx].minMoves = min;
                             }
-                            else
-                            if (min > GameData.allBoards[tempIdx].minMoves) {
-                                GameDataWWW.UpdateBoardInfo(
-                                    GameData.allBoards[tempIdx].matrix,
-                                    GameData.allBoards[tempIdx].minMoves,
-                                    -1);
-                            }
+//                            else
+//                            if (min > GameData.allBoards[tempIdx].minMoves) {
+//                                GameDataWWW.UpdateBoardInfo(
+//                                    GameData.allBoards[tempIdx].matrix,
+//                                    GameData.allBoards[tempIdx].minMoves,
+//                                    -1);
+//                            }
                         }
                     }
                 }

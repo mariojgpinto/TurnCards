@@ -122,7 +122,7 @@ public class SolverBoard{
 		}
 	}
 	
-	public string ToString(){
+	public override string ToString(){
 		string str = "";
 		
 		str = "Board (" + width + "," + height + "):\n";

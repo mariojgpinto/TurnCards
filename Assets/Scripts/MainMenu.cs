@@ -11,7 +11,9 @@ public class MainMenu : MonoBehaviour {
 		switch(id){
 		case 0 : //4x4
             PopulateGUIScript.difficulty = 0;
-            Application.LoadLevel("01-MenuBoards");
+			PopulateGUIScriptPreLoaded.difficulty = 0;
+//            Application.LoadLevel("01-MenuBoards");
+			Application.LoadLevel("01-MenuBoardsRuntime");
 
 			//TurnSquaresGame.boardWidth = 4;
 			//TurnSquaresGame.boardHeight = 4;
@@ -20,8 +22,10 @@ public class MainMenu : MonoBehaviour {
 			break;
 		case 1 : //6x6
             PopulateGUIScript.difficulty = 1;
-            Application.LoadLevel("01-MenuBoards");
-			
+			PopulateGUIScriptPreLoaded.difficulty = 1;
+//            Application.LoadLevel("01-MenuBoards");
+			Application.LoadLevel("01-MenuBoardsRuntime");
+
             //TurnSquaresGame.boardWidth = 6;
 			//TurnSquaresGame.boardHeight = 6;
 			
@@ -29,7 +33,9 @@ public class MainMenu : MonoBehaviour {
 			break;
 		case 2 : //8x8
             PopulateGUIScript.difficulty = 2;
-            Application.LoadLevel("01-MenuBoards");
+			PopulateGUIScriptPreLoaded.difficulty = 2;
+//            Application.LoadLevel("01-MenuBoards");
+			Application.LoadLevel("01-MenuBoardsRuntime");
 
 			//TurnSquaresGame.boardWidth = 8;
 			//TurnSquaresGame.boardHeight = 8;

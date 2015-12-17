@@ -30,17 +30,22 @@ public class TurnSquaresGame : MonoBehaviour {
 
 	bool isBusy = false;
     bool retry = false;
+	bool gameEnded = false;
 
     float timeInit = 0;
 
     public GameObject panelScore;
     public GameObject panelCurrentScore;
+	public GameObject panelBottom;
     
     public Text textCurrentScore;
     public Text textMinScore;
     public Text textBoardID;
-    public Text textFinalScore;
+    public Text textFinalScore_text;
+	public Text textFinalScore_number;
     public Text textTimerCountdown;
+
+	public RectTransform imageLosangleTransform;
 
 
     #endregion
@@ -111,7 +116,6 @@ public class TurnSquaresGame : MonoBehaviour {
 			}
 		}
 
-
 		if(!CheckIfIsValid()) {
 			GenerateRandomMatrix();
 		}
@@ -124,7 +128,12 @@ public class TurnSquaresGame : MonoBehaviour {
 
 		GameLog.StartGame(str,boardWidth, boardHeight);
 
+		gameEnded = false;
+		isBusy = false;
+
         panelScore.SetActive(false);
+		panelBottom.SetActive(true);
+		textBoardID.gameObject.SetActive(true);
     }
 
     void GenerateNextMatrix() {
@@ -188,7 +197,7 @@ public class TurnSquaresGame : MonoBehaviour {
 		currentBoardMaxHeight = boardHeight;
 		currentBoardMinWidth = 0;
 		currentBoardMinHeight = 0;
-		
+
 		scoreCount = 0;
         panelCurrentScore.SetActive(true);
         UpdateGUI_MovesCount();
@@ -215,7 +224,12 @@ public class TurnSquaresGame : MonoBehaviour {
 
 		GameLog.StartGame(id,boardWidth, boardHeight);
 
+		gameEnded = false;
+		isBusy = false;
+
         panelScore.SetActive(false);
+		panelBottom.SetActive(true);
+		textBoardID.gameObject.SetActive(true);
 
         StartCoroutine(ResizeBorders(.5f));
 	}
@@ -397,7 +411,10 @@ public class TurnSquaresGame : MonoBehaviour {
 		yield break;
 
 	EndGame:
+		gameEnded = true;
+
 		EndGame();
+
 		GameLog.EndGame();
         GameDataWWW.UpdateBoardInfo(
             boardMatrix,
@@ -409,25 +426,25 @@ public class TurnSquaresGame : MonoBehaviour {
         GameData.SaveBoard(boardLevel, boardID);
 
 
-        textTimerCountdown.text = "Next\nIn 5";
+        textTimerCountdown.text = "Next In 5";
         if (retry)
             goto EndFunc;
         yield return new WaitForSeconds(1);
         if (retry)
             goto EndFunc;
-        textTimerCountdown.text = "Next\nIn 4";
+        textTimerCountdown.text = "Next In 4";
         yield return new WaitForSeconds(1);
         if (retry)
             goto EndFunc;
-        textTimerCountdown.text = "Next\nIn 3";
+        textTimerCountdown.text = "Next In 3";
         yield return new WaitForSeconds(1);
         if (retry)
             goto EndFunc;
-        textTimerCountdown.text = "Next\nIn 2";
+        textTimerCountdown.text = "Next In 2";
         yield return new WaitForSeconds(1);
         if (retry)
             goto EndFunc;
-        textTimerCountdown.text = "Next\nIn 1";
+        textTimerCountdown.text = "Next In 1";
         yield return new WaitForSeconds(1);
         if (retry)
             goto EndFunc;
@@ -461,6 +478,8 @@ public class TurnSquaresGame : MonoBehaviour {
 		//Debug.Log(currentBoardMinHeight + " >= " + currentBoardMaxHeight + " || " + currentBoardMinWidth + " >= " + currentBoardMaxWidth);
         panelScore.SetActive(true);
         panelCurrentScore.SetActive(false);
+		panelBottom.SetActive(false);
+		textBoardID.gameObject.SetActive(false);
 
         if (GameData.boards[boardLevel][boardID].played) {
             if (GameData.boards[boardLevel][boardID].userMoves > scoreCount)
@@ -471,7 +490,16 @@ public class TurnSquaresGame : MonoBehaviour {
             GameData.boards[boardLevel][boardID].userMoves = scoreCount;
         }
         
-        textFinalScore.text = "Level finished\nin " + scoreCount + " Moves.";
+		textFinalScore_number.text = "" + scoreCount;
+		textFinalScore_text.text = (scoreCount <= GameData.boards[boardLevel][boardID].minMoves) ? "perfect!" : "level completed.";
+
+		bool bestScore = false;
+		if(	GameData.boards[boardLevel][boardID].minMoves == 0 || 
+			scoreCount <= GameData.boards[boardLevel][boardID].minMoves){
+			bestScore = true;
+		}
+
+		imageLosangleTransform.eulerAngles = new Vector3(0,0,bestScore ? 45 : 0);
 	}
 	#endregion
 
@@ -496,30 +524,47 @@ public class TurnSquaresGame : MonoBehaviour {
 	#region BUTTONS_CALLBACKS
 	public void OnButtonPressed(int id){
 		switch(id){
-		    case 0 : //SETTINGS
+	    case 0 : //SETTINGS
 
-			    break;
-		    case 1 : //RESET
+		    break;
+	    case 1 : //RESET
+//				StopAllCoroutines();
+			if(!isBusy && !gameEnded){
+				retry= true;
 			    this.LoadBoardFromID(boardMatrix);
-			    break;
-		    case 2 : //NEW BOARD
-                retry = true;
+			}
+		    break;
+	    case 2 : //NEW BOARD
+//				StopAllCoroutines();
+			if(!isBusy && !gameEnded){
+	            retry = true;
 			    this.GenerateNextMatrix();
-			    break;
-            case 3: //RETRY SAME BOARD
-                retry = true;
-                this.LoadBoardFromID(boardMatrix);
+			}
+		    break;
+        case 3: //RETRY SAME BOARD
+//				StopAllCoroutines();
+			if(!isBusy){
+	            retry = true;
+	            this.LoadBoardFromID(boardMatrix);
+			}
                 break;
-            case 99: //SPACECAN
+		case 4 : //NEXT BOARD
+//				StopAllCoroutines();
+			if(!isBusy){
+				retry = true;
+				this.GenerateNextMatrix();
+			}
+			break;
+        case 99: //SPACECAN
 #if UNITY_ANDROID && !UNITY_EDITOR
-                Application.OpenURL("https://play.google.com/store/apps/details?id=com.BINTERACTIVE.SpaceCan");
+            Application.OpenURL("https://play.google.com/store/apps/details?id=com.BINTERACTIVE.SpaceCan");
 #elif UNITY_IPHONE && !UNITY_EDITOR
-                Application.OpenURL("https://itunes.apple.com/pt/app/id1040093401");
+            Application.OpenURL("https://itunes.apple.com/pt/app/id1040093401");
 #else
-                Application.OpenURL("https://facebook.com/spacecangame");
+            Application.OpenURL("https://facebook.com/spacecangame");
 #endif
-                break;
-            default: break;
+            break;
+        default: break;
 		}
 	}
 #endregion
@@ -561,7 +606,7 @@ public class TurnSquaresGame : MonoBehaviour {
 
 	void OnGUI(){
 		if(Input.GetKeyDown(KeyCode.Escape)){
-			Application.LoadLevel("01-MenuBoards");
+			Application.LoadLevel("01-MenuBoardsRuntime");
 		}
 	}
 #endregion

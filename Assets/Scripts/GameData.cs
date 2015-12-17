@@ -78,6 +78,10 @@ public class GameData {
                     board.minMoves = System.Convert.ToInt32(info[4]);
                     board.matrix = info[5];
 
+					if(info[5].EndsWith("\r")){
+						board.matrix = info[5].Substring(0,info.Length-1);
+					}
+
                     bool added = false;
                     if (board.boardSizeW == 4 && boards[0].Count < 150) {
                         board.id = boards[0].Count;
@@ -110,6 +114,7 @@ public class GameData {
 
         boards[idx] = new List<Board>();
 
+		int ac = 0;
         foreach (string board in auxBoards) {
             string[] auxBoard = board.Split(new string[] { splitMarker }, System.StringSplitOptions.RemoveEmptyEntries);
 
@@ -131,6 +136,11 @@ public class GameData {
             }
 
             boards[idx].Add(allBoards[allBoards.Count - 1]);
+
+			ac++;
+			if(ac==150){
+				return;
+			}
         }
     }
     #endregion

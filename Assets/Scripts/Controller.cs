@@ -25,7 +25,7 @@ public class Controller : MonoBehaviour {
 
         GameData.Initialize();
 
-
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 	}
 
 	// Use this for initialization

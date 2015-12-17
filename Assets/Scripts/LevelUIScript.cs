@@ -6,9 +6,11 @@ public class LevelUIScript : MonoBehaviour {
 
     public UnityEngine.UI.Text text_ID;
     public GameObject image_User;
-    public UnityEngine.UI.Text text_User;
     //public GameObject image_Min;
     //public UnityEngine.UI.Text text_Min;
+
+	public GameObject image_UserScore;
+	public UnityEngine.UI.Text text_score;
 
 
     public void SetLevel(int difficulty, int number)
@@ -20,18 +22,22 @@ public class LevelUIScript : MonoBehaviour {
         Board board = GameData.boards[difficulty][number];
 
         if (board.played) {
-            image_User.SetActive(true);
-            text_User.text = "" + board.userMoves;
+            //image_User.SetActive(true);
+			image_UserScore.SetActive(true);
+			text_score.text = "" + board.userMoves;
 
             if(board.userMoves > board.minMoves) {
-                image_User.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 0);
+				image_UserScore.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 0);
+				//image_User.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, 0);
             }
             else {
-                image_User.GetComponent<UnityEngine.UI.Image>().color = new Color(0, 1, 0);
+                image_UserScore.GetComponent<UnityEngine.UI.Image>().color = new Color(0, 1, 0);
+				//image_User.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, 45);
             }
         }
         else {
-            image_User.SetActive(false);
+            //image_User.SetActive(false);
+			image_UserScore.SetActive(false);
         }
 
         //if (board.minMoves > 0) {
