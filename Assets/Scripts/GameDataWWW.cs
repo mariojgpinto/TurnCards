@@ -34,9 +34,9 @@ public class GameDataWWW : MonoBehaviour {
 		}
     }
 
-    public static void GetBoardInfo(string matrix) {
+	public static void GetBoardInfo(string matrix, bool updateScreen = false) {
 		if(Application.internetReachability != NetworkReachability.NotReachable){
-        	instance.StartCoroutine(GetBoardInfo_routine(matrix));
+			instance.StartCoroutine(GetBoardInfo_routine(matrix,updateScreen));
 		}
     }
 
@@ -116,7 +116,7 @@ public class GameDataWWW : MonoBehaviour {
             GameData.SaveBoards();
     }
 
-    static IEnumerator GetBoardInfo_routine(string matrix) {
+	static IEnumerator GetBoardInfo_routine(string matrix, bool updateScreen = false) {
         WWW www = new WWW(GameDataWWW.wwwGetBoardInfo.Replace(_id,matrix));
         yield return www;
 
@@ -134,8 +134,12 @@ public class GameDataWWW : MonoBehaviour {
                         int tempIdx = GameData.GetBoardIndex(boardID);
 
                         if (tempIdx >= 0 && tempIdx < GameData.allBoards.Count) {
-                            if (min < GameData.allBoards[tempIdx].minMoves) {
+							if (GameData.allBoards[tempIdx].minMoves == 0 || min < GameData.allBoards[tempIdx].minMoves) {
                                 GameData.allBoards[tempIdx].minMoves = min;
+
+								if(updateScreen){
+									TurnSquaresGame.instance.UpdateGUI_BoardID();
+								}
                             }
                         }
                     }
@@ -185,7 +189,7 @@ public class GameDataWWW : MonoBehaviour {
                     }
                 }
 
-                Debug.Log(www.text);
+				Debug.Log("GetAllInfo\n" + www.text);
             }           
         }
         catch (System.Exception e) {
@@ -214,8 +218,16 @@ public class GameDataWWW : MonoBehaviour {
 		localTempFile = Application.persistentDataPath + "/tempInfo.dat";
 		StartCheck();
 		GetAllInfo();
+
+		InvokeRepeating("GetAllInfo_invoke",60,60);
 	}
-	
+
+	public void GetAllInfo_invoke() {
+		if(Application.internetReachability != NetworkReachability.NotReachable){
+			instance.StartCoroutine(GetAllInfo_routine());
+		}
+	}
+
 	// Update is called once per frame
 	//void Update () {
 	

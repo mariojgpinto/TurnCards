@@ -21,9 +21,12 @@ public class LevelUIScript : MonoBehaviour {
 
         Board board = GameData.boards[difficulty][number];
 
-        if (board.played) {
+//        if (board.played) {
             //image_User.SetActive(true);
 			image_UserScore.SetActive(true);
+			
+
+		if (board.played) {
 			text_score.text = "" + board.userMoves;
 
             if(board.userMoves > board.minMoves) {
@@ -34,11 +37,16 @@ public class LevelUIScript : MonoBehaviour {
                 image_UserScore.GetComponent<UnityEngine.UI.Image>().color = new Color(0, 1, 0);
 				//image_User.GetComponent<RectTransform>().eulerAngles = new Vector3(0, 0, 45);
             }
-        }
-        else {
-            //image_User.SetActive(false);
-			image_UserScore.SetActive(false);
-        }
+		}
+		else{
+			text_score.text = "" + board.minMoves;
+			image_UserScore.GetComponent<UnityEngine.UI.Image>().color = new Color(1, 1, 1);
+		}
+//        }
+//        else {
+//            //image_User.SetActive(false);
+//			image_UserScore.SetActive(false);
+//        }
 
         //if (board.minMoves > 0) {
         //    image_Min.SetActive(true);
@@ -57,6 +65,7 @@ public class LevelUIScript : MonoBehaviour {
 
         TurnSquaresGame.boardWidth = levelDifficulty == 0 ? 4 : levelDifficulty == 1 ? 6 : 8;
         TurnSquaresGame.boardHeight = TurnSquaresGame.boardWidth;
+		TurnSquaresGame.board_number = levelNumber;
 
 
         TurnSquaresGame.boardLevel = levelDifficulty;

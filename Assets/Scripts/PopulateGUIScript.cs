@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.UI.Extensions;
+using System.Collections;
 
 public class PopulateGUIScript : MonoBehaviour {
     public GameObject panelUIPrefab;
@@ -68,10 +70,20 @@ public class PopulateGUIScript : MonoBehaviour {
 	}
 
     // Use this for initialization
-    void Start ()
+	IEnumerator Start ()
     {
         //nRows = nElementsPerPage / nColumns;
         GeneratePages(GameData.boards[difficulty]);
+
+		yield return new WaitForEndOfFrame();
+
+		float page = Mathf.FloorToInt((TurnSquaresGame.board_number + 1) / (float)nElementsPerPage);
+		Debug.Log("Page: " + page);
+
+		for(int i = 0 ; i < page ; ++i) {
+			GameObject.Find("Horizontal Scroll Snap").GetComponent<HorizontalScrollSnap>().NextScreen();
+			yield return new WaitForEndOfFrame();
+		}
 
     }
 

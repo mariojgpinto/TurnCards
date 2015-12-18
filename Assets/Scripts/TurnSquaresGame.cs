@@ -4,10 +4,13 @@ using System.Collections;
 
 public class TurnSquaresGame : MonoBehaviour {
 	#region VARIABLES
+	public static TurnSquaresGame instance;
+
 	public static bool isRandom = true;
 
     public static int boardLevel;
-    public static int boardID;
+	public static int boardID;
+	public static int board_number = 0;
 
     public static string boardMatrix = "";
 
@@ -221,6 +224,8 @@ public class TurnSquaresGame : MonoBehaviour {
 		}
 
 		UpdateGUI_BoardID();
+
+		GameDataWWW.GetBoardInfo(id, true);
 
 		GameLog.StartGame(id,boardWidth, boardHeight);
 
@@ -508,7 +513,7 @@ public class TurnSquaresGame : MonoBehaviour {
         textCurrentScore.text = "" + scoreCount;
 	}
 
-	void UpdateGUI_BoardID(){
+	public void UpdateGUI_BoardID(){
 		textBoardID.text = boardMatrix;
 
         if(GameData.boards[boardLevel][boardID].minMoves == 0) {
@@ -569,7 +574,11 @@ public class TurnSquaresGame : MonoBehaviour {
 	}
 #endregion
 
-#region UNITY_CALLBACKS
+	#region UNITY_CALLBACKS
+	void Awake () {
+		instance = this;
+	}
+
 	// Use this for initialization
 	void Start () {
 		CreateCardMatrix();
@@ -587,21 +596,21 @@ public class TurnSquaresGame : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-#if UNITY_EDITOR
+	#if UNITY_EDITOR
 		if (Input.GetMouseButtonDown(0))
 		{
 			if(!isBusy)
 				ProcessTouch(Input.mousePosition.x, Input.mousePosition.y);
 			
 		}
-#else
+	#else
 		//if (Input.touchCount > 0/* && Input.touches[0].phase == TouchPhase.Began*/)
 		if (Input.touchCount > 0 && Input.touches[0].phase == TouchPhase.Began)
 		{
 			if(!isBusy)
 				ProcessTouch(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y);
 		}
-#endif
+	#endif
 	}
 
 	void OnGUI(){
@@ -609,5 +618,5 @@ public class TurnSquaresGame : MonoBehaviour {
 			Application.LoadLevel("01-MenuBoardsRuntime");
 		}
 	}
-#endregion
+	#endregion
 }

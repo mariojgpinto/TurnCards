@@ -200,6 +200,7 @@ namespace UnityEngine.UI.Extensions
         //used for changing between screen resolutions
         private void DistributePages()
         {
+			Debug.Log("DistributePages");
             int _offset = 0;
             int _step = (int)(Screen.width * .8f);
             int _dimension = 0;

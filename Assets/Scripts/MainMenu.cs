@@ -65,7 +65,8 @@ public class MainMenu : MonoBehaviour {
     #region UNITY_CALLBACKS
     // Use this for initialization
     void Start() {
-
+		Debug.Log("Main Menu");
+		TurnSquaresGame.board_number = 0;
     }
     //	
     //	// Update is called once per frame
