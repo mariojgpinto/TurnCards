@@ -28,7 +28,7 @@ public class PopulateGUIScript : MonoBehaviour {
 
         page.GetComponentInChildren<Text>().text = "Level " + (difficulty == 0 ? "4x4" : (difficulty == 1 ? "6x6" : "8x8"));
 
-        GameObject contentGameObject = page.transform.FindChild("Panel").gameObject;
+        GameObject contentGameObject = page.transform.Find("Panel").gameObject;
         UnityEngine.UI.GridLayoutGroup grid = contentGameObject.GetComponentInChildren<UnityEngine.UI.GridLayoutGroup>();
         
 

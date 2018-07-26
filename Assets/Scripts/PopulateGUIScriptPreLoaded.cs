@@ -20,9 +20,9 @@ public class PopulateGUIScriptPreLoaded : MonoBehaviour {
 	void GeneratePage(int startNumber, int pageNumber)
     {
 		string str =  "Level " + (difficulty == 0 ? "4x4" : (difficulty == 1 ? "6x6" : "8x8"));
-		pages[pageNumber].transform.FindChild("Text").GetComponent<Text>().text = str;
+		pages[pageNumber].transform.Find("Text").GetComponent<Text>().text = str;
 
-		GameObject contentGameObject = pages[pageNumber].transform.FindChild("Panel").gameObject;
+		GameObject contentGameObject = pages[pageNumber].transform.Find("Panel").gameObject;
         UnityEngine.UI.GridLayoutGroup grid = contentGameObject.GetComponentInChildren<UnityEngine.UI.GridLayoutGroup>();
         
 
